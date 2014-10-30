@@ -1,4 +1,4 @@
-project(gipro-task2)
+project(task2)
 cmake_minimum_required(VERSION 2.8)
 
 # OpenCV
