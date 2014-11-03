@@ -36,6 +36,7 @@
     cv::destroyWindow("DEBUG");
 
 
+#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 using namespace std;
 using namespace cv;
@@ -184,6 +185,32 @@ inline bool getFileList(string directory, vector<string>& filelist)
     sort(filelist.begin(), filelist.end());
 
     return true;
+}
+
+template <typename T>
+void quicksort_iterative(T* array, uint len)
+{
+   static const uint MAX = 64; /* stack size for max 2^(64/2) array elements  */
+   uint left = 0, stack[MAX], pos = 0;
+   for ( ; ; ) {                                           /* outer loop */
+      for (; left+1 < len; len++) {                /* sort left to len-1 */
+         if (pos == MAX) len = stack[pos = 0];  /* stack overflow, reset */
+         uint rand_idx = randRange<uint>(left, len-1); /* pick random pivot */
+         T pivot = array[rand_idx];
+         stack[pos++] = len;                    /* sort right part later */
+         for (unsigned right = left-1; ; ) { /* inner loop: partitioning */
+            while (array[++right] < pivot);  /* look for greater element */
+            while (pivot < array[--len]);    /* look for smaller element */
+            if (right >= len) break;           /* partition point found? */
+            T temp = array[right];
+            array[right] = array[len];                  /* the only swap */
+            array[len] = temp;
+         }                            /* partitioned, continue left part */
+      }
+      if (pos == 0) break;                               /* stack empty? */
+      left = len;                             /* left to right is sorted */
+      len = stack[--pos];                      /* get next range to sort */
+   }
 }
 
 
